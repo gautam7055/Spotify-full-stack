@@ -22,13 +22,18 @@ const AddSong = () => {
 
         const formData = new FormData();
 
-        formData.append('name',name);
-        formData.append('desc',desc);
-        formData.append('image',image);
-        formData.append('audio',song);
-        formData.append('album',album);
+        formData.append('name', name);
+        formData.append('desc', desc);
+        formData.append('album', album);
 
-        const response = await axios.post(`${url}/api/song/add`,formData);
+        // append files only if selected to avoid sending boolean/false values
+        if (image) formData.append('image', image);
+        if (song) formData.append('audio', song);
+
+        // explicitly send multipart/form-data header so backend receives it correctly
+        const response = await axios.post(`${url}/api/song/add`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
 
         if(response.data.success) {
           toast.success("Song added");
